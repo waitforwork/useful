@@ -1,0 +1,41 @@
+cat <<EOF | kubectl apply -f -
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-to-backend
+  namespace: app
+spec:
+  podSelector:
+    matchLabels:
+      tier: api
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          role: frontend
+    ports:
+    - port: 8000
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-to-frontend
+  namespace: app
+spec:
+  podSelector:
+    matchLabels:
+      role: frontend
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          role: backend
+    ports:
+    - port: 80
+      protocol: TCP
+EOF

@@ -1,0 +1,46 @@
+1. базовое извлечение, извлекаем из файла только первый столбец(ip адрес)
+	awk '{print $1}' /home/laborant/awk_challenge/logs/access/access.log > /home/laborant/q1_ips.txt
+2. базовое извлечение 2 и 4 столбца, разделенных запятой
+	awk -F',' '{print $2, $4}' /home/laborant/awk_challenge/data/hr/employees.csv > /home/laborant/q2_names.txt
+3. извлечение последнего столбца независимо от наличия пробелов
+	awk '{print $NF}' /home/laborant/awk_challenge/sys/metrics/processes.txt > /home/laborant/q3_commands.txt
+4. форматирование текста, добавляем "User:" к каждому имени во втором столбце
+	awk -F',' '{print "User: " $2}' /home/laborant/awk_challenge/data/hr/employees.csv > /home/laborant/q4_formatted.txt
+5. извлечение 2 и 4 столбца убирая ";" и пробелы
+	awk -F'[; ]+' '{print $2, $4}' /home/laborant/awk_challenge/data/hr/sales_raw.txt > /home/laborant/q5_clean.txt
+6. извлечение полной строки, у которой в 9 столбце есть код больше 500
+	awk '$9 >= 500' /home/laborant/awk_challenge/logs/access/access.log > /home/laborant/q6_errors.txt
+7. извлечь все строки, в которых 4 столбец равен Sales, убрать запятые
+	awk -F',' '$4 == "Sales"' /home/laborant/awk_challenge/data/hr/employees.csv > /home/laborant/q7_sales.txt
+==============================================================================================================================================================
+8. включение и исключение регулярных выражений, содержит слово Mozilla и не содержит слово Windows
+	awk '/Mozilla/ && !/Windows/' /home/laborant/awk_challenge/logs/access/access.log > /home/laborant/q8_1_filter.txt
+   найти имя сотрудника, чье имя начинается с буквы C
+	awk -F',' '$2 ~ /^C/' /home/laborant/awk_challenge/data/hr/employees.csv > /home/laborant/q8_2_starts.txt
+   найти имя сотрудника, чье имя заканчивается на ing
+	awk -F',' '$4 ~ /ing$/' /home/laborant/awk_challenge/data/hr/employees.csv > /home/laborant/q8_3_ends.txt
+9. найти сотрудника, который по 4 столбцу "Support" а по 5 столбцу получает больше 60000
+	awk -F',' '$4 == "Support" && $5 > 60000' /home/laborant/awk_challenge/data/hr/employees.csv > /home/laborant/q9_complex.txt
+10. вывести имя из 2 столбца и зп, умноженную на 0,8 из 5 столбца
+	awk -F',' '{print $2, $5 * 0.8}' /home/laborant/awk_challenge/data/hr/employees.csv > /home/laborant/q10_calc.txt
+11. подсчитать и вывести сумму всех цифо пятого столбца
+	awk -F',' '{sum += $5} END {print sum}' /home/laborant/awk_challenge/data/hr/employees.csv > /home/laborant/q11_total.txt
+12. извлечение строк с 10 по 20
+	awk 'NR >= 10 && NR <= 20' /home/laborant/awk_challenge/data/hr/employees.csv > /home/laborant/q12_range.txt
+13. написать в самом начале BEGIN, потом текст файла, и в конце вставить END
+	awk 'BEGIN {print "START"} {print} END {print "END"}' /home/laborant/awk_challenge/data/hr/employees.csv > /home/laborant/q13_report.txt
+14. вывести имя из 2 столбца и название отдела из 4 столбца, разделенных символами: "->"
+	awk -F',' -v OFS=' -> ' '{print $2, $4}' /home/laborant/awk_challenge/data/hr/employees.csv > /home/laborant/q14_ofs.txt
+==================================================================================================================================================================
+15. извлечение имени пользователя(1столбец), у которых /bin/bash используется в качестве оболочки в последнем столбце
+	awk -F':' '$NF == "/bin/bash" {print $1}' /etc/passwd > /home/laborant/q15_users.txt
+16. извлечение только номера порта из столбца "ip addres"
+	ss -lunt | awk 'NR>1 {split($5, a, ":"); print a[length(a)]}' > /home/laborant/q16_ports.txt
+17. извлечение файловой системы и процент использования, только для строк, в которых имя файловой системы начинается на /dev
+	df -P | awk '$1 ~ /^\/dev/ {print $1, 0+$5}' > /home/laborant/q17_disk.txt
+18. фильтрация строк, чья длинна более 80 символов
+	awk 'length($0) > 80' /home/laborant/awk_challenge/logs/access/access.log > /home/laborant/q18_long.txt
+19. подсчет количества запросов поступивших с каждого ip-адреса
+	awk '{count[$1]++} END {for (ip in count) print ip, count[ip]}' /home/laborant/awk_challenge/logs/access/access.log > /home/laborant/q19_count.txt
+20. выводим два варианта, если во втором столбце зп больше 80000, то мы пишем Высокая вместо цифр, если меньше, то стандартная
+    awk -F',' '{print $2, ($5 > 80000 ? "High" : "Standard")}' /home/laborant/awk_challenge/data/hr/employees.csv > /home/laborant/q20_status.txt

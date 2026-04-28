@@ -1,0 +1,14 @@
+sudo tar -xzvf ~/rootfs.tar.gz -C /tmp --preserve-permissions --same-owner --xattrs --xattrs-include='*' --numeric-owner
+1. перейти в директорию /tmp перед распаковкой
+    -С /tmp
+2. сохраняет оригинальные права доступа(chmod)
+    --preserve-permissions
+    -p
+3. сохранить оригинальных владельцев(chown)
+    --same-owner
+4. сохранить расширенные атрибуты файлов(SELinux context, capabilities)
+    --xattrs
+5. сохранить ВСЕ типы расширенных атрибутов(по умолчанию сохраняются не все)
+    --xattrs-include='*'
+6. использовать числовые UID/GID вместо имен пользователей/групп(chown)
+    --numeric-owner

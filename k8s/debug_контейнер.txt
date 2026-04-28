@@ -1,0 +1,26 @@
+1. сначала делаем 
+	kubectl proxy &
+2. после этого можно использовать curl
+
+curl -k -H "Content-Type: application/strategic-merge-patch+json" \
+-X PATCH \
+'http://localhost:8001/api/v1/namespaces/default/pods/non-root/ephemeralcontainers' \
+-d '{
+  "spec": {
+    "ephemeralContainers": [{
+      "name": "debugger-sigusr1",
+      "image": "alpine",
+      "command": ["sh"],
+      "targetContainerName": "app",
+      "stdin": true,
+      "tty": true,
+      "securityContext": {
+        "runAsUser": 101,
+        "runAsGroup": 0
+      }
+    }]
+  }
+}'
+
+3. после этого будет доступно подключение с соседнего терминала
+	kubectl attach -it non-root -c debugger-sigusr1

@@ -1,0 +1,44 @@
+1. Рабочие нагрузки (Workloads) — то, что запускает контейнеры
+Pod	                        Один или несколько контейнеров, работающих вместе	                                    Запустить Redis, приложение + sidecar-контейнер
+Deployment	                Управляет репликами Pod'а, поддерживает нужное количество, обновления	                Запустить 3 копии веб-приложения
+StatefulSet	                Как Deployment, но для stateful-приложений (с базой данных)	                            PostgreSQL, Kafka, Zookeeper
+DaemonSet	                Запускает по одному Pod'у на каждой ноде кластера	                                    Логгеры (Fluentd), мониторинг (Prometheus node exporter)
+ReplicaSet	                Гарантирует, что всегда работает N копий Pod'ов (обычно не используется напрямую)	    Deployment создаёт ReplicaSet внутри
+Job	                        Запускает задачу до завершения (однократно)	                                            Бэкап базы, миграция схемы
+CronJob	Job                 по расписанию (cron)	                                                                Ежедневная отправка отчётов, очистка логов
+2. Сеть и балансировка (Networking)
+Service	                    Статический IP и балансировка между Pod'ами	                                            Внутренний доступ к бэкенду на порту 8080
+Ingress	                    HTTP/HTTPS маршрутизация снаружи в кластер	                                            domain.com/api → backend-svc, domain.com → frontend-svc
+NetworkPolicy	            Firewall между Pod'ами	                                                                Только frontend может стучаться в backend
+Endpoint/Endpoints	        Автоматически создаётся Service'ом, список IP Pod'ов	                                Обычно не трогают руками
+EndpointSlice	            Улучшенная версия Endpoints для больших кластеров	                                    Для кластеров с 1000+ Pod'ов
+3. Хранение данных (Storage)
+PersistentVolume (PV)	    Физическое хранилище (диск) в кластере	                                                100GiB SSD на NFS-сервере
+PersistentVolumeClaim (PVC)	Заявка на выделение места из PV	                                                        "Дай мне 10GiB быстрого хранилища"
+StorageClass	            Шаблоны для динамического создания PV	                                                "ssd-fast", "hdd-slow", "network-storage"
+VolumeSnapshot	            Снимок состояния PersistentVolume	                                                    Бэкап базы данных
+CSI Driver	                Драйвер для подключения внешних систем	                                                CSI для AWS EBS, GCE PD, Ceph
+4. Конфигурация и секреты
+ConfigMap	                Хранит несекретные данные (переменные окружения, файлы конфигов)	                    app.properties, nginx.conf
+Secret	                    Хранит секретные данные в base64 (пароли, токены, ключи)	                            Пароль БД, API-ключ, JWT secret
+ServiceAccount	            Идентификатор для Pod'а при общении с API Kubernetes	                                Дать Pod'у права на чтение Pod'ов
+5. Управление доступом (RBAC)
+Role	                    Права в рамках одного namespace	                                                        Разрешить Pod'ам читать Secrets в namespace prod
+ClusterRole	                Права на весь кластер	                                                                Разрешить пользователю создавать Namespace'ы
+RoleBinding	                Привязывает Role к пользователю/ServiceAccount	                                        "Дать Серёже роль admin в namespace prod"
+ClusterRoleBinding	        Привязывает ClusterRole	                                                                "Дать мониторинг-сервису права читать все Pod'ы"
+6. Политики и ограничения
+LimitRange	                Лимиты на Pod'и в namespace	                                                            В namespace dev минимум 128Mi RAM, максимум 2Gi
+ResourceQuota	            Ограничение суммарных ресурсов в namespace	                                            В namespace team-a всего 8 CPU и 16Gi RAM
+NetworkPolicy	            Безопасность Pod'ов                                                                     Firewall между сервисами
+7. Мониторинг и отладка
+Event	                    События в кластере (не создаётся руками)	                                            "Pod не запустился — нет CPU", "Node стал Ready"
+HorizontalPodAutoscaler     Автоматически добавляет/убирает реплики	                                                При CPU > 50% увеличить с 2 до 5 копий
+VerticalPodAutoscaler(VPA)	Меняет requests/limits Pod'а	                                                        При нехватке памяти увеличить лимиты с 512Mi до 1Gi
+PodDisruptionBudget(PDB)	Защита от одновременного выключения Pod'ов	                                            "Всегда должно быть минимум 3 реплики"
+8. Специфические и расширенные
+CustomResourceDefinition	Создание своих типов ресурсов	                                                        Создать kind: Database, kind: Pipeline
+Namespace	                Изоляция ресурсов	                                                                    dev, staging, prod
+Node	                    Физическая/виртуальная машина в кластере	                                            worker-node-1, worker-node-2
+PriorityClass	            Приоритет Pod'ов при нехватке ресурсов	                                                critical-app вытеснит low-priority-app
+RuntimeClass	            Выбор runtime для контейнера (gVisor, Kata)	                                            Запустить изолированный Pod

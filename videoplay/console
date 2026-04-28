@@ -1,0 +1,1 @@
+ffplay "rtsp://admin:q1w2e3r4@192.168.3.64:554/live1.sdp"

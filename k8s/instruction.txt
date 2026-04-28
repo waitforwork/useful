@@ -1,0 +1,42 @@
+1. проброска порта контейнера(контейнер слушает 20220) наружу, на локальный порт 8080
+	kubectl port-forward pod/lonely 8080:20220
+2. если нет оболочки, но надо попасть в контейнер(lonely)
+	kubectl debug -it lonely --image=busybox --target=app
+	kubectl debug -it web --image=alpine --target=web
+3. если есть оболочка, и надо попасть в контейнер и выполнить команду netstat -tulnp
+	kubectl exec lonely -- /bin/sh -c "netstat -tulpn" 2>/dev/null
+4. копирование файла конфигурации с хоста в под(pod=web, имя контейнера=server)
+  	kubectl cp ~/nginx.conf web:/etc/nginx/nginx.conf -c server
+    kubectl cp /home/laborant/blackhole/index.html space/blackhole-3d:/usr/share/nginx/html/index.html   (пространство имен=space, имя пода=blackhole-3d)
+5. выполнить команду на поде(pod=web), перезапустить nginx
+   	kubectl exec web -- nginx -s reload
+6. создание привилегированного debug контейнера(имя контейнреа=app, имя пода=web-server, имя образа=alpine)
+	kubectl debug -it web-server --image=alpine --target=app --profile=general -- sh
+	после этого можно в контейнере редактировать файлы
+7. создание namespace
+    kubectl create namespace app
+8. создание deployment
+    kubectl create deployment frontend -n app --image=ghcr.io/iximiuz/labs/nginx:alpine --replicas=2 --port=80
+    kubectl create deployment backend -n app --image=ghcr.io/lpmi-13/default-go --replicas=2 --port=8000
+8.1 принудительный перезапуск deployment
+    kubectl rollout restart deployment config-deployment -n orbit
+8.2 проверить статус deployment
+    kubectl rollout status deployment config-deployment -n orbit
+8.3 сохранение deployment в файл
+    kubectl get deployment config-deployment -n orbit -o yaml > /tmp/config-deployment.yaml
+9. добавление лэйблов ко всем подам фронта/бэкэнда
+    kubectl label pods -n app -l app=frontend role=frontend
+    kubectl label pods -n app -l app=backend tier=api
+10. парсинг пода
+    BACKEND_POD=$(kubectl get pods -n app -l app=backend -o jsonpath='{.items[0].metadata.name}')
+    kubectl label pod -n app $BACKEND_POD role=backend
+11. создание секрета
+    kubectl create secret generic config-secret -n orbit --from-literal=username=appuser --from-literal=password=apppass
+    kubectl apply -f /tmp/extra-config-secret.yaml
+    kubectl create secret generic osaka-pgsql-secret --namespace osaka-database --from-literal=POSTGRES_USER=myuser --from-literal=POSTGRES_PASSWORD=mypass --from-literal=POSTGRES_DB=mydb
+12. проверить секреты в пространстве имен
+    kubectl get secrets -n orbit
+13. првоерить, что все поды в пространстве имен orbit работают
+    kubectl get pods -n orbit
+14. удалить исходный под
+    kubectl delete pod osaka-pgsql-pod -n osaka-pgsql-pod

@@ -1,0 +1,15 @@
+1. установить необходимые зависимости:
+    apt-get install -y cmake stress net-tools htop curl
+2. с сайта gitlab.com берем нужную версию и вставляем в консоль
+    curl --location "https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh" | sudo bash
+3. добавляем external url
+    sudo EXTERNAL_URL="http://192.168.56.101" apt install gitlab-ce
+4. пароль для пользователя root лежит в файле
+    sudo cat /etc/gitlab/initial_root_password 
+5. отключить фаервол
+    sudo systemctl enable --now ssh
+    sudo ufw allow 22/tcp
+    sudo ufw allow 80/tcp
+    sudo ufw allow 443/tcp
+    sudo ufw enable
+

@@ -1,0 +1,37 @@
+1. проверим установленную версию
+    git --version
+    если версия, 2.25.1, то нужно обновить версию
+2. нужно обновить git
+    sudo apt-add-repository -y ppa:git-core/ppa
+    sudo apt update
+    sudo apt install git -y
+3. проверим теперь какая версия установлена:
+    git --version
+    если версия 2.33.1 и выше, то все ок
+=======================================================
+1. теперь необходимо сменить remote с SSH на HTTP
+    git remote -v
+    git remote remove origin
+=======================================================
+1. теперь создаем проект в репозиторие
+2. после этого переходим в папку с проектом
+    cd ./my-app/
+3. 
+    git init --initial-branch=main --object-format=sha1
+    git remote add origin git@192.168.56.101:alex/project01.git
+    git add .
+    git commit -m "Initial commit"
+    git push -u origin main
+=======================================================
+1. создать у себя ключи ssh, если не были созданы
+    ssh-keygen
+2. скопировать ключ публичный из файла .ssh/id_rsa.pub
+    cat ~/.ssh/id_rsa.pub
+3. зайти в настройки пользователя(user->Preferences->Access->SSH keys)
+    создать новый ключ, вставить скопированный ключ, придумать название(title)
+4. проверить подключение:
+    ssh -T git@192.168.56.101
+5. добавить в нашу папку адрес нашего репозитория
+    ssh скопировать ссылку с репозитория
+    git remote set-url origin git@192.168.56.101:alex/project01.git
+

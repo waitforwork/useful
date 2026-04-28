@@ -1,0 +1,17 @@
+для разметки и создания различных партиций нужно:
+1. установить parted и btrfs-progs
+	sudo apt install parted btrfs-progs
+2. создать GPT таблицу и разделы
+	sudo parted /dev/vdb --script mklabel gpt
+	sudo parted /dev/vdb --script mkpart primary ext4 0% 10GiB
+	sudo parted /dev/vdb --script mkpart primary btrfs 10GiB 100%
+3. уведомить ядро о новых разделах:
+	sudo partx -u /dev/vdb
+4. отформатировать разделы в ext4 и btrfs
+	sudo mkfs.ext4 -F /dev/vdb1
+	sudo mkfs.btrfs -f /dev/vdb2
+5. создать точки монитрования и смонтировать
+	sudo mkdir -p /var/log/acme
+	sudo mkdir -p /var/lib/acme
+	sudo mount /dev/vdb1 /var/log/acme
+	sudo mount /dev/vdb2 /var/lib/acme

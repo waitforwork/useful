@@ -1,0 +1,54 @@
+перед установкой раннера, надо поставить докер для этого делаем:
+sudo apt update
+sudo apt install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+sudo usermod -aG docker $USER
+sudo systemctl status docker
+sudo systemctl start docker
+sudo systemctl enable docker 
+sudo systemctl status docker
+newgrp docker
+docker ps
+
+=======================================================================================================
+после этого скачиваем раннер 
+
+docker run -d --name gitlab-runner --restart always \
+   -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+   -v /var/run/docker.sock:/var/run/docker.sock \
+   gitlab/gitlab-runner:latest
+=======================================================================================================
+теперь надо зарегестрировать этот контейнер
+    docker run --rm -it -v /srv/gitlab-runner/config:/etc/gitlab-runner gitlab/gitlab-runner register
+теперь переходим в projects/my-pet-prj -> settings -> CI/CD -> Runners -> Create project runner
+вводим параметры: 
+Tag: допустим docker_01
+ставим галочку: Run untagged jobs
+описание, что нибудь написать
+ставим галочку Lock to current projects
+нажимаем создать, копируем данные в консоль(url + token)
+после этого указываем в качестве executor: docker(если runner docker |||| если shell то указываем shell)
+после этого указываем в качестве image: ubuntu:20.04
+
+
+======================================================
+=установка раннера на тестовый сервер, где нет докера=
+======================================================
+
+curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" | sudo bash
+sudo apt install -y gitlab-runner 
+

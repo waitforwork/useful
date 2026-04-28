@@ -1,0 +1,5 @@
+будет 1 основной сервер: 
+gitlab Server (Docker tag: gitlab)
+и 2 сервера: 
+shell tag: test
+shell tag stage

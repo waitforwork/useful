@@ -1,0 +1,8 @@
+1. создание namespace
+    sudo ctr namespace create my-ns
+2. скачивание образа
+    sudo ctr --namespace my-ns image pull docker.io/library/nginx:alpine
+3. запуск контейнера в фоновом режиме
+    sudo ctr --namespace my-ns run -d docker.io/library/nginx:alpine my-nginx
+4. поиск task ID у запущенного контейнера
+    sudo ctr --namespace moby task ls

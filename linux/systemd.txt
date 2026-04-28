@@ -1,0 +1,25 @@
+1. создание сервиса, simple-server.service
+
+[Unit]
+Description=Simple HTTP Server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/simple-server
+Restart=always
+RestartSec=2
+User=nobody
+Group=nogroup
+
+[Install]
+WantedBy=multi-user.target
+
+2. перезапустить конфигурацию systemd
+	sudo systemctl daemon-reload
+3. включение автозапуска сервиса
+	sudo systemctl enable simple-server.service
+4. старт сервиса
+	sudo systemctl start simple-server.service
+5. проверка логов
+	sudo journalctl -u simple-server.service -f

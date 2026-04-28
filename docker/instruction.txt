@@ -1,0 +1,46 @@
+1. сборка контейнера из файла(имя контейнера my-app:v1.0.0)
+	docker build -t my-app:v1.0.0 .
+2. скачать контейнер с репозитория ([домен]/[путь_репозитория]:[тег])
+	docker pull nginx
+	docker pull ghcr.io/nginx/nginx:latest
+	docker pull ghcr.io/openfaas/faas-netes:latest
+	docker pull --platform linux/arm64 docker.io/library/nginx:alpine
+	docker pull --platform linux/ppc64le docker.io/library/nginx:alpine
+	docker pull --platform linux/amd64 docker.io/library/nginx:alpine
+	docker pull --platform linux/arm/v7 docker.io/library/nginx:alpine
+3. посмотреть скаченные контейнеры
+	docker images
+
+4. создать сетевое пространство имен(my-net-ns)
+	sudo ip netns add my-net-ns
+	проверка: ip netns list
+5. получить список сетевых интерфейсов в пространстве имен
+	sudo ip netns exec my-net-ns ip link ls
+6. добавление тега с полным путем к удаленному реестру
+	docker tag acme/app:v1.0.0 registry.iximiuz.com/acme/app:v1.0.0
+	docker tag toolkit:latest localhost:5000/toolkit:latest
+7. пуш образа в реестр
+	docker push registry.iximiuz.com/acme/app:v1.0.0
+	docker push localhost:5000/toolkit:latest
+8. запуск контейнера (-d=запуск в фоновом режиме, --name=имя контейнера)
+	docker run nginx
+    docker run -d --name resource-hog ghcr.io/iximiuz/labs/resource-hog/herder:v1.0.0
+    docker run redis redis-cli --version          (запускает контейнер из образа redis, переопределяет команду по умолчанию(redis-server) с флагом --version)
+9. посмотреть подробную информацию о контейнере(сетевая конфигурация, фаловая система, запуск и состояние, ресурсы, тома...)
+	docker inspect
+    docker inspect $CONTAINER_NAME | grep -i "status"
+10. отправить сигнал в контейнер
+    docker kill --signal SIGUSR1 app-1
+    docker kill -s SIGUSR1 app-1
+11. посмотреть логи контейнера
+    docker logs app-1
+12. приостановка контейнера
+    docker pause $CONTAINER_NAME
+13. возобнавление работы контейнера
+    docker unpause $CONTAINER_NAME
+14. сохранение образа в архив
+    docker save -o images.tar ghcr.io/iximiuz/labs/nginx:alpine ghcr.io/iximiuz/labs/alpine:3   (сразу два образа в 1 архив)
+    docker save -o images.tar ghcr.io/iximiuz/labs/nginx:alpine 
+    docker save -o images.tar ghcr.io/iximiuz/labs/alpine:3
+15. загрузка образов из одного архива
+    docker load -i images.tar
