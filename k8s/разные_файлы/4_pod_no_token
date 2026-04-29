@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-no-token
+  namespace: default
+spec:
+  automountServiceAccountToken: false   # отключаем монтирование токена
+  containers:
+    - name: httpd
+      image: httpd:trixie
+      ports:
+        - containerPort: 80

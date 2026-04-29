@@ -22,10 +22,13 @@
 7. пуш образа в реестр
 	docker push registry.iximiuz.com/acme/app:v1.0.0
 	docker push localhost:5000/toolkit:latest
-8. запуск контейнера (-d=запуск в фоновом режиме, --name=имя контейнера)
+8. запуск контейнера (-d=запуск в фоновом режиме, -t=запуск с псевдотерминалом, -i=запуск с STDIN, --name=имя контейнера)
 	docker run nginx
     docker run -d --name resource-hog ghcr.io/iximiuz/labs/resource-hog/herder:v1.0.0
     docker run redis redis-cli --version          (запускает контейнер из образа redis, переопределяет команду по умолчанию(redis-server) с флагом --version)
+    docker run registry.iximiuz.com/terminal-monitor
+    docker run -t registry.iximiuz.com/terminal-monitor
+    docker run -it python:3-slim
 9. посмотреть подробную информацию о контейнере(сетевая конфигурация, фаловая система, запуск и состояние, ресурсы, тома...)
 	docker inspect
     docker inspect $CONTAINER_NAME | grep -i "status"
