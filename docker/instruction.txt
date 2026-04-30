@@ -47,3 +47,9 @@
     docker save -o images.tar ghcr.io/iximiuz/labs/alpine:3
 15. загрузка образов из одного архива
     docker load -i images.tar
+16. настройка политики перезапуска(без удаления контейнера)
+    docker update --restart on-failure app-1
+17. пересоздание контейнера и настройка политики перезапуска
+    docker stop app-1
+    docker rm app-1
+    docker run -d --name app-1 --restart on-failure -p 8080:8080 nginx

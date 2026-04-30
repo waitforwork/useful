@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ml-worker
+  namespace: project-x
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx
