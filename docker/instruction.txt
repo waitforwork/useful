@@ -1,9 +1,10 @@
 1. сборка контейнера из файла(имя контейнера my-app:v1.0.0)
 	docker build -t my-app:v1.0.0 .
-2. скачать контейнер с репозитория ([домен]/[путь_репозитория]:[тег])
+2. скачать контейнер с репозитория ([домен]/[путь_репозитория]:[тег])   (@-разделитель для указания дайджеста)
 	docker pull nginx
 	docker pull ghcr.io/nginx/nginx:latest
 	docker pull ghcr.io/openfaas/faas-netes:latest
+    docker pull registry.iximiuz.com/acme/app@sha256:76d822da72eca8d151be12322d54f9ee5ffc330b74f0da29344f06d85761d114
 	docker pull --platform linux/arm64 docker.io/library/nginx:alpine
 	docker pull --platform linux/ppc64le docker.io/library/nginx:alpine
 	docker pull --platform linux/amd64 docker.io/library/nginx:alpine
@@ -49,7 +50,8 @@
     docker load -i images.tar
 16. настройка политики перезапуска(без удаления контейнера)
     docker update --restart on-failure app-1
-17. пересоздание контейнера и настройка политики перезапуска
+17. пересоздание контейнера и настройка политики перезапуска(time-даст время контейнеру корректно завершиться)
+    docker stop --time=60 app-1
     docker stop app-1
     docker rm app-1
     docker run -d --name app-1 --restart on-failure -p 8080:8080 nginx

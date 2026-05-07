@@ -1,0 +1,15 @@
+1. подготовка системы:
+    sudo dnf update
+    1.1 удалить старые пакеты
+        sudo dnf remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-selinux docker-engine-selinux docker-engine
+    1.2 установить утилиту
+        sudo dnf -y install dnf-plugins-core
+2. добавление репозитория Docker
+    sudo dnf config-manager addrepo --from-repofile https://download.docker.com/linux/fedora/docker-ce.repo
+3. установка всех компонентов Docker Engine
+    sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+4. запуск и вколючение
+    sudo systemctl start docker
+    sudo systemctl enable docker
+5. добавление пользователя в группу docker
+    sudo usermod -aG docker test_user

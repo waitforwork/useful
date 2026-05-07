@@ -36,7 +36,21 @@
     kubectl create secret generic osaka-pgsql-secret --namespace osaka-database --from-literal=POSTGRES_USER=myuser --from-literal=POSTGRES_PASSWORD=mypass --from-literal=POSTGRES_DB=mydb
 12. проверить секреты в пространстве имен
     kubectl get secrets -n orbit
-13. првоерить, что все поды в пространстве имен orbit работают
+12.1 извлечь и декодировать токен в /opt/token
+    kubectl get secret "$SECRET_NAME" -n mars -o jsonpath='{.data.token}' | base64 -d > /opt/token
+13. найти имя секрета
+    SECRET_NAME=$(kubectl get secrets -n mars -o json | jq -r '.items[] | select(.type=="kubernetes.io/service-account-token") | select(.metadata.annotations["kubernetes.io/service-account.name"]=="mars-sa-v2") | .metadata.name')
+14. првоерить, что все поды в пространстве имен orbit работают
     kubectl get pods -n orbit
-14. удалить исходный под
+15. удалить исходный под
     kubectl delete pod osaka-pgsql-pod -n osaka-pgsql-pod
+16. создание Ingress с именем path-ingress
+    kubectl create ingress path-ingress -n platform --rule="app.local/api*=api:5678" --rule="app.local/admin*=admin:5678" --rule="app.local/*=frontend:5678" --class=traefik
+    проверка маршрутизации
+    curl -H "Host: app.local" http://localhost/api 
+    curl -H "Host: app.local" http://localhost/admin
+    curl -H "Host: app.local" http://localhost/  
+17. просмотр созданного ingress
+    kubectl get ingress -n platform
+18. автоматическая фильтрация через конвеер(удаление строки namespace:anaconda) на лету, без изменения исходного файла и применение в пространстве имен viper
+    kubectl apply -f <(grep -v 'namespace: anaconda' /home/laborant/ancient-tiger/app.yaml) -n viper

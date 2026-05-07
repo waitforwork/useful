@@ -1,0 +1,39 @@
+1. на сервере где стоит gitlab надо:
+1.1 отредактировать sudo nano /etc/gitlab/gitlab.rb    
+    добавить белый ip с портом
+        external_url 'http://<===WHITE_IP_ADDR===>:22200'
+1.2 выполнить реконфигурацию и рестарт gitlab
+    sudo gitlab-ctl reconfigure
+    sudo gitlab-ctl restart
+1.3 убедиться что в фаерволе не заблочен порт 22200, должно быть разрешено:
+    sudo ufw status verbose
+    22200/tcp (v6)             ALLOW IN    Anywhere (v6)  
+    если этой фразы нет, то добавим порт в фаервол
+1.3.1 добавление порта 22200 в исключения фаеровола
+        sudo ufw allow 22200/tcp
+2. переходим на машину, где поднята виртуалка с gitlab и которая имеет статический белый ip <===WHITE_IP_ADDR===>
+2.1 необходимо пробросить порт снаружи, редактируем nginx
+    пробрасываем внешнее подключение по порту 8083 на виртуалку http://192.168.56.101:22200
+    sudo nano /etc/nginx/sites-available/gitlab 
+server {
+    listen 8083;
+    server_name <===WHITE_IP_ADDR===>;
+
+    location / {
+        proxy_pass http://192.168.56.101:22200;
+        proxy_set_header Host $http_host;                   #если написать $host, то порт не будет сохранен
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+    
+3. прокидываем порты внутри коммутатора 
+    22200 -> 8083
+4. проверяем в браузере на удаленной машине 
+    http://<===WHITE_IP_ADDR===>:22200/
+5. можно еще посмотреть командой 
+    vagrant@gitlab:$        curl -I http://192.168.56.101:22200
+    alex@alex:$             curl -I http://192.168.56.101:22200
+    melnikov@melnikov:~$    curl -I http://<===WHITE_IP_ADDR===>:22200
+

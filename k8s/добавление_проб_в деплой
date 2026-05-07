@@ -1,0 +1,30 @@
+kubectl patch deployment app-deployment -n space --type='json' -p='[
+  {
+    "op": "add",
+    "path": "/spec/template/spec/containers/0/readinessProbe",
+    "value": {
+      "httpGet": {
+        "path": "/readyz",
+        "port": 80
+      },
+      "initialDelaySeconds": 2,
+      "periodSeconds": 5
+    }
+  },
+  {
+    "op": "add",
+    "path": "/spec/template/spec/containers/0/livenessProbe",
+    "value": {
+      "httpGet": {
+        "path": "/healthz",
+        "port": 80
+      },
+      "initialDelaySeconds": 5,
+      "periodSeconds": 10,
+      "failureThreshold": 3
+    }
+  }
+]'
+
+проверка запуска подов с пробами
+    kubectl describe pod -n space -l app=app-deployment

@@ -7,6 +7,7 @@
     создание одного пода с Redis внутри пространства имен prod
     дали 0,1 ядра CPU, 128MiB памяти, 
     если под сломается - никто его не перезапустит, ручной режим для тестов
+
 3. 4_pod_no_token
     создание одного пода на базе httpd:trixie образа в пространстве имен default
     пробросили порт 80 внутри контейнера
@@ -17,3 +18,18 @@
     min=100m CPU, 128Mi Memory, max= 800m CPU, 1Gi Memory
     default_limits=500m CPU, 512Mi Memory, default_requests=200m CPU, 256Mi Memory
     предотвращает запуск контейнеров без указания ресурсов и ограничивает "прожорливые" контейнеры
+    после этого можно создать под, который подсосет эти ограничения, пример пода в файле 5_limit_range_pod
+
+5. 6_observabillity-ingress
+    создание ingress-ресурса в пространстве имен platform-observabillity
+    использование ingressClassName: traefik для маршрутизации трафика через Traefik
+        для хоста iximiuz.prometheus.io направлять весь трафик на prometheus-kube-prometheus-prometheus на порт 9090
+        для хоста iximiuz.grafana.io направлять весь трафике на prometheus-grafana на порт 80
+    позволяет обращаться к Prometheus и Grafana через удобные DNS-имена, настроенные в /etc/hosts
+6 7_ingress
+    создание ingress-ресурса с именем path-ingress в пространстве имен platform
+    использование ingressClassName: traefik для обработки правил маршрутизации
+    правила маршрутизации для хоста app.local
+        Путь /api (тип Prefix) → бэкенд-сервис api на порту 5678
+        Путь /admin (тип Prefix) → бэкенд-сервис admin на порту 5678
+        Путь /(тип Prefix, универсальный) → бэкенд-сервис frontend на порту 5678

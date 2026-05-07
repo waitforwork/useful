@@ -1,0 +1,16 @@
+1. подготовка системы:
+    sudo apt update
+    sudo apt install -y ca-certificates curl
+2. добавление репозитория Docker
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt update
+3. установка всех компонентов Docker Engine
+    sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+4. запуск и вколючение
+    sudo systemctl enable --now containerd
+    sudo systemctl enable --now docker
+5. добавление пользователя в группу docker
+    sudo usermod -aG docker test_user
