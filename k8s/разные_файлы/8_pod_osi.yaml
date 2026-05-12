@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-1
+  namespace: default
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    volumeMounts:
+    - name: welcome-page
+      mountPath: /usr/share/nginx/html
+    ports:
+    - containerPort: 80
+  volumes:
+  - name: welcome-page
+    image:
+      reference: registry.iximiuz.com/welcome-page:v1
+      pullPolicy: IfNotPresent
