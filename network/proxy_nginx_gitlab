@@ -37,3 +37,22 @@ server {
     alex@alex:$             curl -I http://192.168.56.101:22200
     melnikov@melnikov:~$    curl -I http://<===WHITE_IP_ADDR===>:22200
 
+
+
+если при выполнении vagrant@gitlab:$        curl -I http://192.168.56.101:22200
+вылетает 502 ошибка, то возможно ошибка с бд, вот решение по восстановлению работы с бд
+1. удалили старую БД PostgreSQL
+    sudo rm -rf /var/opt/gitlab/postgresql/data
+2. сделали reconfigure (создалась пустая БД)
+    sudo gitlab-ctl reconfigure
+3. выполнили миграцию бд
+    sudo gitlab-rake db:migrate
+4. очистка кэша Rails
+    sudo gitlab-rake cache:clear
+5. рестарт пумы
+    sudo gitlab-ctl restart puma sidekiq
+
+на будущее, возможно надо очищать кэш 
+    sudo gitlab-rake cache:clear
+или мб, проверить и докатить недостающие изменения схемы при помощи 
+    sudo gitlab-rake db:migrate

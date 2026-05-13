@@ -1,0 +1,11 @@
+1. запущена служба допустим worker.service, которая падает постоянно
+2.1 нужно посмотреть журнал
+    journalctl -u worker.service --since "5 minutes ago" -e
+2.2 ну или состояние системы
+    systemctl status worker.service
+3. допустим у нас проблема с выделенной памятью, правим файл, отвечающий за эту службу
+    sudo nano /etc/systemd/system/worker.service
+    увеличиваем выделяемую память
+4. перезапускаем службу
+    sudo systemctl daemon-reload
+    sudo systemctl restart worker.service
