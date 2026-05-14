@@ -55,3 +55,6 @@
     docker stop app-1
     docker rm app-1
     docker run -d --name app-1 --restart on-failure -p 8080:8080 nginx
+18. авторизация в приватном репозитории
+    docker login private.repo.com -u username -p password
+    docker login one_more.repo:5555 -u developer -p simple_password
