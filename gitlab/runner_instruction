@@ -1,0 +1,28 @@
+переходим в projects/my-pet-prj -> settings -> CI/CD -> Runners -> Create project runner
+
+вводим параметры: 
+Tag: допустим docker_01
+ставим галочку: Run untagged jobs
+описание, что нибудь написать
+ставим галочку Lock to current projects
+нажимаем создать, копируем данные в консоль(url + token)  !!!!!важно, надо добавить "sudo" перед gitlab-runner register <URL> <token>
+    sudo gitlab-runner gerister --url .... --token .....
+=================================
+посмотреть список раннеров
+    sudo gitlab-runner list
+посмотреть конфиг файл, в нем же можно и отредачить раннеры(но лучше так не делать, раннер может быть не зареган)
+    sudo cat /etc/gitlab-runner/config.toml
+посмотреть статус и детали каждого раннера
+    sudo gitlab-runner verify
+
+============================
+возможные ошибки:
+===========================
+выполнить команду:
+    sudo journalctl -u gitlab-runner -n 50 --no-pager
+    покажет чтото типа:
+        stage gitlab-runner[9662]: FATAL: Service run failed                           error=chdir /var/lib/gitlab-runner: no such file or directory
+решение:
+    sudo mkdir -p /var/lib/gitlab-runner
+    sudo chown gitlab-runner:gitlab-runner /var/lib/gitlab-runner
+
