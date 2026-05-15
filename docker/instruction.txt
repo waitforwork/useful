@@ -1,5 +1,9 @@
 1. сборка контейнера из файла(имя контейнера my-app:v1.0.0)
 	docker build -t my-app:v1.0.0 .
+1.1 сборка образа для архитектуры linux/amd64
+    docker build --platform linux/amd64 -t registry.iximiuz.com/metrics-api:v2.0.0-amd64 ~/app-amd64/
+1.2 сборка образа для архитектуры linux/arm64
+    docker build --platform linux/arm64 -t registry.iximiuz.com/metrics-api:v2.0.0-arm64 ~/app-arm64/
 2. скачать контейнер с репозитория ([домен]/[путь_репозитория]:[тег])   (@-разделитель для указания дайджеста)
 	docker pull nginx
 	docker pull ghcr.io/nginx/nginx:latest
@@ -23,6 +27,8 @@
 7. пуш образа в реестр
 	docker push registry.iximiuz.com/acme/app:v1.0.0
 	docker push localhost:5000/toolkit:latest
+7.1 пуш манифеста в регистр 
+    docker manifest push registry.iximiuz.com/metrics-api:v2.0.0
 8. запуск контейнера (-d=запуск в фоновом режиме, -t=запуск с псевдотерминалом, -i=запуск с STDIN, --name=имя контейнера)
 	docker run nginx
     docker run -d --name resource-hog ghcr.io/iximiuz/labs/resource-hog/herder:v1.0.0
@@ -58,3 +64,10 @@
 18. авторизация в приватном репозитории
     docker login private.repo.com -u username -p password
     docker login one_more.repo:5555 -u developer -p simple_password
+19. сохранение дайджеста манифеста (мы инспектируем конкретный образ, в нем находим раздел манифестов, в нем может быть много digest, находим раздел платформы, в нем находим чтобы была нужная архитектура, и сохраняем digest)
+    ARM64_DIGEST=$(docker manifest inspect registry.iximiuz.com/metrics-api:v2.0.0-arm64 | jq -r '.manifests[] | select(.platform.architecture=="arm64" and .platform.os=="linux") | .digest')
+echo $ARM64_DIGEST
+    AMD64_DIGEST=$(docker manifest inspect registry.iximiuz.com/metrics-api:v2.0.0-amd64 | jq -r '.manifests[] | select(.platform.architecture=="amd64" and .platform.os=="linux") | .digest')
+echo $AMD64_DIGEST
+20. создаем новый манифест-список, и кладем в него два варианта(дигест арм и дигест амд)
+    docker manifest create registry.iximiuz.com/metrics-api:v2.0.0 registry.iximiuz.com/metrics-api@${AMD64_DIGEST} registry.iximiuz.com/metrics-api@${ARM64_DIGEST}
